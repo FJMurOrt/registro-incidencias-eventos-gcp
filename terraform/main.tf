@@ -85,4 +85,12 @@ resource "google_artifact_registry_repository" "repositorio_incidencias" {
   location      = var.region
   repository_id = "registro-incidencias-repo"
   format        = "DOCKER"
+  cleanup_policies {
+    id     = "borrar-imgs-antiguas"
+    action = "DELETE"
+    condition {
+      tag_state  = "ANY"
+      older_than = "86400s"
+    }
+  }
 }
