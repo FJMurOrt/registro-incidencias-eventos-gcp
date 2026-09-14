@@ -7,7 +7,7 @@ Este proyecto es un sistema que registra incidencias usando una arquitectura bas
 Aquí no hay solo una API haciendolo todo. Hay sistemas separados que se comunican a través de una cola de mensajes:
 
 1. El primer sistema es la API, la que recibe la incidencia y responde publicando el mensaje
-2. El segundo sistema, el procesador de las incidencias, reacciona a dicho evento, recoge ese mensaje, lo gestiona y lo guarda en la base de datos de FireStore
+2. El segundo sistema, el procesador de las incidencias, reacciona a dicho evento, recoge ese mensaje y lo gestiona/guarda en la base de datos de FireStore
 
 ## ⚙️ ¿Qué hace? ¿Cómo es el flujo?
 
