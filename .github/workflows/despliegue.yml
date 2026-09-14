@@ -1,0 +1,77 @@
+name: CI/CD Registro de Incidencias
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependencias de la API
+        run: pip install -r api/requirements.txt
+
+      - name: Comprobar que la API responde
+        run: |
+          cd api
+          python -c "from main import app"
+
+      - name: Instalar dependencias del procesador de incidencias
+        run: pip install -r procesador/requirements.txt
+
+      - name: Comprobar que el procesador de incidencias responde
+        run: |
+          cd procesador
+          python -c "from main import app"
+
+  build-and-deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Autenticación en GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configuración gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configuración de Docker para Artifact Registry
+        run: gcloud auth configure-docker europe-southwest1-docker.pkg.dev
+
+      - name: Construir y subir imagen de la API
+        run: |
+          docker build -t europe-southwest1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/registro-incidencias-repo/api:${{ github.sha }} ./api
+          docker push europe-southwest1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/registro-incidencias-repo/api:${{ github.sha }}
+
+      - name: Construir y subir imagen del procesador de incidencias
+        run: |
+          docker build -t europe-southwest1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/registro-incidencias-repo/procesador:${{ github.sha }} ./procesador
+          docker push europe-southwest1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/registro-incidencias-repo/procesador:${{ github.sha }}
+
+      - name: Desplegar la API en Cloud Run
+        run: |
+          gcloud run deploy registro-incidencias-api \
+            --image europe-southwest1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/registro-incidencias-repo/api:${{ github.sha }} \
+            --region europe-southwest1 \
+            --project ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Desplegar el procesador de incidencias en Cloud Run
+        run: |
+          gcloud run deploy procesador-de-las-incidencias \
+            --image europe-southwest1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/registro-incidencias-repo/procesador:${{ github.sha }} \
+            --region europe-southwest1 \
+            --project ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Comprobar que la API responde
+        run: |
+          URL=$(gcloud run services describe registro-incidencias-api --region=europe-southwest1 --project=${{ secrets.GCP_PROJECT_ID }} --format="value(status.url)")
+          curl --fail "$URL/docs" || exit 1
