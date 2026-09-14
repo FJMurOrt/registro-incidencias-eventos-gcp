@@ -2,14 +2,14 @@
 
 Este proyecto es un sistema que registra incidencias usando una arquitectura basada en eventos en GCP. Está desplegado en Google Cloud, con Pub/Sub, Firestore y Cloud Run.
 
-💡 ## La idea
+## 💡 La idea
 
 Aquí no hay solo una API haciendolo todo. Hay sistemas separados que se comunican a través de una cola de mensajes:
 
 1. El primer sistema es la API, la que recibe la incidencia y responde publicando el mensaje
 2. El segundo sistema, el procesador de las incidencias, recoge ese mensaje, lo gestiona y lo guarda en la base de datos de FireStore
 
-⚙️ ## ¿Qué hace? ¿Cómo es el flujo?
+## ⚙️ ¿Qué hace? ¿Cómo es el flujo?
 
 1. Envío una incidencia a la API (título, descripción, gravedad)
 2. La API me responde al instante con un ID, y publica el mensaje en Pub/Sub
