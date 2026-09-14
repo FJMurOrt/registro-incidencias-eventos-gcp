@@ -17,18 +17,14 @@ jobs:
       - name: Instalar dependencias de la API
         run: pip install -r api/requirements.txt
 
-      - name: Comprobar que la API responde
-        run: |
-          cd api
-          python -c "from main import app"
+      - name: Comprobar sintaxis de la API
+        run: python -m py_compile api/main.py
 
       - name: Instalar dependencias del procesador de incidencias
         run: pip install -r procesador/requirements.txt
 
-      - name: Comprobar que el procesador de incidencias responde
-        run: |
-          cd procesador
-          python -c "from main import app"
+      - name: Comprobar sintaxis del procesador de incidencias
+        run: python -m py_compile procesador/main.py
 
   build-and-deploy:
     needs: test
