@@ -9,7 +9,7 @@ Aquí no hay solo una API haciendolo todo. Hay sistemas separados que se comunic
 1. El primer sistema es la API, la que recibe la incidencia y responde publicando el mensaje
 2. El segundo sistema, el procesador de las incidencias, recoge ese mensaje, lo gestiona y lo guarda en la base de datos de FireStore
 
-🔄 ## ¿Qué hace? ¿Cómo es el flujo?
+⚙️ ## ¿Qué hace? ¿Cómo es el flujo?
 
 1. Envío una incidencia a la API (título, descripción, gravedad)
 2. La API me responde al instante con un ID, y publica el mensaje en Pub/Sub
