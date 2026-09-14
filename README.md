@@ -1,4 +1,4 @@
-# Registro de Incidencias con Arquitectura de Eventos (Terraform, Pub/Sub, Cloud Run, Firestore)
+# Registro de Incidencias con Eventos (Terraform, Pub/Sub, Cloud Run, Firestore)
 
 Este proyecto es un sistema que registra incidencias usando una arquitectura basada en eventos en GCP. Está desplegado en Google Cloud, con Pub/Sub, Firestore y Cloud Run.
 
